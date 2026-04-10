@@ -1,11 +1,11 @@
 {
   "mcpServers": {
     "notion": {
-      "command": "npx",
-      "args": ["-y", "@notionhq/notion-mcp-server"],
-      "env": {
-        "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer ${NOTION_API_KEY}\", \"Notion-Version\": \"2022-06-28\"}"
-      }
+      "command": "powershell",
+      "args": [
+        "-NoProfile", "-NonInteractive", "-Command",
+        "$key = (Get-Content .env | Where-Object { $_ -match '^NOTION_API_KEY=' } | Select-Object -First 1).Split('=',2)[1].Trim(); $env:OPENAPI_MCP_HEADERS = '{\"Authorization\": \"Bearer ' + $key + '\", \"Notion-Version\": \"2022-06-28\"}'; npx -y @notionhq/notion-mcp-server"
+      ]
     },
     "figma": {
       "command": "npx",

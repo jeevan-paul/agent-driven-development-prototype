@@ -43,10 +43,12 @@ These two status transitions are mandatory — not optional:
 
 | Trigger | From | To |
 |---|---|---|
-| Before any code changes begin (after reading story + design) | `To Do` | `In Progress` |
+| At the start of `/frontend` — Step 0a, before any code is written | `To Do` | `In Progress` |
 | Immediately after the PR is successfully raised | `In Progress` | `Ready for Review` |
 
-Use the Notion MCP to update the story's status property. The story ID will be available from the `/fetch-story` step.
+Use the Notion MCP to update the story's status property. The Notion Page ID will be available from the `/fetch-story` step.
+
+`/fetch-story` is read-only — it never changes the story status.
 
 ---
 

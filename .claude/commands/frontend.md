@@ -4,7 +4,14 @@ Implement the feature described in the story brief and design brief from the pre
 
 Follow all conventions in CLAUDE.md exactly. Do not deviate from the existing codebase patterns.
 
-## Step 0 — Checkout feature branch (mandatory, before any code changes)
+## Step 0 — Mark story In Progress + checkout feature branch (mandatory, before any code changes)
+
+### 0a — Update Notion status to In Progress
+
+Using the Notion MCP, update the story's **Status** property from `To Do` to `In Progress`.
+Use the Notion Page ID from the story brief. Confirm the update succeeded before continuing.
+
+### 0b — Checkout feature branch
 
 Check the current git branch:
 

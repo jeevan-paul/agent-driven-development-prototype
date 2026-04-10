@@ -12,9 +12,7 @@ Fetch the Notion story with ID or URL: $ARGUMENTS
    - Acceptance criteria
    - Any linked Figma design URL
    - Current status
-3. Update the story's **Status** property from `To Do` to `In Progress` using the Notion MCP
-4. Confirm the status update was successful
-5. Output a structured story brief for use in subsequent steps:
+3. Output a structured story brief for use in subsequent steps:
 
 ```
 STORY BRIEF
@@ -31,7 +29,7 @@ Acceptance Criteria:
   - <criterion 2>
 
 Figma URL:  <url or "not specified">
-Status:     In Progress ✓
+Status:     <current status — do not change it>
 ```
 
-Do not begin any code changes. This step is read-only except for the Notion status update.
+This step is fully read-only. Do not update the Notion status here.
