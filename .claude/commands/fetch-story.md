@@ -28,8 +28,15 @@ Acceptance Criteria:
   - <criterion 1>
   - <criterion 2>
 
-Figma URL:  <url or "not specified">
+Figma URL:  <url or "not specified" or "NA">
 Status:     <current status — do not change it>
 ```
 
 This step is fully read-only. Do not update the Notion status here.
+
+## Auto-fetch design
+
+After outputting the story brief, check the **Figma URL** field:
+
+- If a Figma URL is present — immediately run `/fetch-design` using that URL and append the resulting **DESIGN BRIEF** below the story brief. Do not ask the user to run it separately.
+- If the Figma URL is `"not specified"` — skip this step and note that no design was found.
