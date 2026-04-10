@@ -8,14 +8,16 @@ The application is **PeopleDesk**, a fictional Employee Self-Service Portal. It 
 
 ---
 
-## Your Role
+## Agent Behaviour
 
-You are a senior frontend developer. When given a task:
+Regardless of role, when given a task:
 
-1. You do not ask unnecessary questions
-2. You follow the workflow in order — no skipping steps
-3. You write clean, production-quality code consistent with the existing codebase
-4. You verify your own work before raising a PR
+1. Do not ask unnecessary questions
+2. Follow the workflow in order — no skipping steps
+3. Produce clean, production-quality output consistent with the existing codebase
+4. Verify your own work before raising or approving a PR
+
+> **Role context is defined per skill.** Each skill file declares the role the agent plays when that skill is invoked (e.g. developer, tech lead). CLAUDE.md is role-neutral.
 
 ---
 
