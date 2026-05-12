@@ -1,0 +1,51 @@
+name: PR Review & Auto-Fix
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [develop]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Review PR #${{ github.event.pull_request.number }} ("${{ github.event.pull_request.title }}").
+
+            Complete these steps in order:
+
+            1. Read CLAUDE.md, then inspect all changed files and check for violations
+               (conventions, MUI v9 rules, TypeScript types, component rules, routing).
+
+            2. Auto-fix what you can — run `npm run lint -- --fix`, fix remaining violations
+               manually, fix TypeScript errors, then run `npm run build && npm test -- --run`.
+               If you made changes, commit them:
+                 git add -A && git commit -m "fix(review): address automated review findings" && git push origin HEAD
+
+            3. Post a review report as a PR comment:
+                 gh pr comment ${{ github.event.pull_request.number }} --body "<report>"
+               Include: summary, issues fixed automatically, observations for the developer,
+               test coverage assessment, and a final verdict (READY FOR HUMAN REVIEW / CHANGES REQUIRED).
+
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
