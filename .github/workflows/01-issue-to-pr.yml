@@ -36,35 +36,64 @@ jobs:
             - Title: ${{ github.event.issue.title }}
             - Body: ${{ github.event.issue.body }}
 
-            Complete these steps in order:
+            ---
 
-            1. Expand the issue into a full user story (description, Given/When/Then acceptance
-               criteria, edge cases, effort estimate S/M/L/XL) and update the issue body.
-               The original description must be preserved at the top, followed by the expanded
-               story below a divider. Use this exact structure:
+            ## Step 1 — Assess whether there is enough information to implement
 
-                 gh issue edit ${{ github.event.issue.number }} --body "${{ github.event.issue.body }}
+            Before writing any code, decide if the issue provides enough detail to implement
+            correctly. Ask yourself:
+            - Is it clear what UI or behaviour is expected?
+            - Is the scope well-defined (not open-ended like "improve the app")?
+            - Are there enough specifics to make implementation decisions without guessing?
 
-               ---
+            **If NO — post a clarifying question and stop:**
+              gh issue comment ${{ github.event.issue.number }} --body "Before I start I need a few details:\n\n<specific questions, one per line>\n\nReply here and I'll pick it up."
+            Do not create a branch, do not write any code. Stop here.
 
-               ## Story Expansion
+            **If YES — proceed with steps 2–6 below.**
 
-               <expanded story here>"
+            ---
 
-            2. Configure git, create branch `feature/GH-${{ github.event.issue.number }}-<slug>`,
-               and implement the feature — follow CLAUDE.md for all conventions.
-               If the issue body contains image URLs (e.g. attached screenshots or assets),
-               download each one with curl into src/assets/ with a meaningful filename and
-               import them locally — never reference remote URLs directly in code.
+            ## Step 2 — Expand the story
 
-            3. Write unit tests for every new or changed component.
+            Update the issue body, preserving the original description at the top:
+              gh issue edit ${{ github.event.issue.number }} --body "${{ github.event.issue.body }}
 
-            4. Run the quality gate and fix any failures before continuing:
-                 npm run lint -- --fix && npm run build && npm test -- --run --passWithNoTests
+            ---
 
-            5. Commit all changes and open a PR targeting `develop`:
-                 gh pr create --title "[GH-${{ github.event.issue.number }}] ${{ github.event.issue.title }}" \
-                   --body "..." --base develop
+            ## Story Expansion
+
+            <expanded story: description, Given/When/Then acceptance criteria, edge cases, effort estimate S/M/L/XL>"
+
+            ---
+
+            ## Step 3 — Implement
+
+            Configure git, create branch `feature/GH-${{ github.event.issue.number }}-<slug>`,
+            and implement the feature — follow CLAUDE.md for all conventions.
+            If the issue body contains image URLs, download each with curl into src/assets/
+            with a meaningful filename and import locally — never use remote URLs in code.
+
+            ---
+
+            ## Step 4 — Write unit tests
+
+            Write unit tests for every new or changed component.
+
+            ---
+
+            ## Step 5 — Quality gate
+
+            Fix any failures before continuing:
+              npm run lint -- --fix && npm run build && npm test -- --run --passWithNoTests
+
+            ---
+
+            ## Step 6 — Raise PR
+
+            Commit all changes and open a PR targeting `develop`:
+              gh pr create --title "[GH-${{ github.event.issue.number }}] ${{ github.event.issue.title }}" \
+                --body "..." --base develop
 
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
