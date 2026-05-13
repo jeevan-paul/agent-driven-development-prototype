@@ -11,9 +11,20 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      issues: write
 
     steps:
       - name: Merge PR to develop
         run: gh pr merge ${{ github.event.pull_request.number }} --squash --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      - name: Close linked issue
+        run: |
+          ISSUE_NUMBER=$(gh pr view ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --json body -q '.body' | grep -oE '(Closes|Fixes|Resolves) #[0-9]+' | grep -oE '[0-9]+' | head -1)
+          if [ -n "$ISSUE_NUMBER" ]; then
+            gh issue close $ISSUE_NUMBER --repo ${{ github.repository }} \
+              --comment "Closed — merged via PR #${{ github.event.pull_request.number }}."
+          fi
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
