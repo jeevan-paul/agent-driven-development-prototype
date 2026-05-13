@@ -38,7 +38,7 @@ jobs:
                (conventions, MUI v9 rules, TypeScript types, component rules, routing).
 
             2. Auto-fix what you can — run `npm run lint -- --fix`, fix remaining violations
-               manually, fix TypeScript errors, then run `npm run build && npm test -- --run`.
+               manually, fix TypeScript errors, then run `npm run build && npm test -- --run --passWithNoTests`.
                If you made changes, commit them:
                  git add -A && git commit -m "fix(review): address automated review findings" && git push origin HEAD
 

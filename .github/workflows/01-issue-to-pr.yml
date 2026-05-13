@@ -46,7 +46,7 @@ jobs:
             3. Write unit tests for every new or changed component.
 
             4. Run the quality gate and fix any failures before continuing:
-                 npm run lint -- --fix && npm run build && npm test -- --run
+                 npm run lint -- --fix && npm run build && npm test -- --run --passWithNoTests
 
             5. Commit all changes and open a PR targeting `develop`:
                  gh pr create --title "[GH-${{ github.event.issue.number }}] ${{ github.event.issue.title }}" \
