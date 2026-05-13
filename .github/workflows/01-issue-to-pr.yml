@@ -44,6 +44,9 @@ jobs:
 
             2. Configure git, create branch `feature/GH-${{ github.event.issue.number }}-<slug>`,
                and implement the feature — follow CLAUDE.md for all conventions.
+               If the issue body contains image URLs (e.g. attached screenshots or assets),
+               download each one with curl into src/assets/ with a meaningful filename and
+               import them locally — never reference remote URLs directly in code.
 
             3. Write unit tests for every new or changed component.
 
