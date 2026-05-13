@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import {
   Box,
   Card,
@@ -53,7 +53,6 @@ async function createGitHubIssue(
 export default function BuildPage() {
   const [form, setForm] = useAtom(buildFormAtom);
   const [status, setStatus] = useAtom(buildSubmitStatusAtom);
-  const resetStatus = useSetAtom(buildSubmitStatusAtom);
 
   const titleError = form.title.trim().length === 0 ? 'Title is required' : form.title.length > TITLE_MAX ? `Title must be ${TITLE_MAX} characters or fewer` : '';
   const descriptionError = form.description.trim().length === 0 ? 'Description is required' : '';
@@ -63,12 +62,12 @@ export default function BuildPage() {
 
   function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm((prev) => ({ ...prev, title: e.target.value }));
-    if (status.type !== 'idle') resetStatus({ type: 'idle' });
+    if (status.type !== 'idle') setStatus({ type: 'idle' });
   }
 
   function handleDescriptionChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setForm((prev) => ({ ...prev, description: e.target.value }));
-    if (status.type !== 'idle') resetStatus({ type: 'idle' });
+    if (status.type !== 'idle') setStatus({ type: 'idle' });
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -87,7 +86,7 @@ export default function BuildPage() {
 
   function handleReset() {
     setForm({ title: '', description: '' });
-    resetStatus({ type: 'idle' });
+    setStatus({ type: 'idle' });
   }
 
   return (
