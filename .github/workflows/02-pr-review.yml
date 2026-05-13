@@ -35,9 +35,19 @@ jobs:
           prompt: |
             Review PR #${{ github.event.pull_request.number }} ("${{ github.event.pull_request.title }}").
 
-            Complete these steps in order:
+            First, check whether this is a first-time review or a follow-up run triggered by
+            an earlier automated fix commit. Run:
+              gh pr view ${{ github.event.pull_request.number }} --comments --json comments \
+                -q '.comments[] | select(.author.login == "claude") | .body' | head -1
 
-            1. Read CLAUDE.md, then inspect all changed files and check for violations
+            If output is non-empty, a review comment already exists — this is a FOLLOW-UP RUN.
+            If output is empty, this is the FIRST RUN.
+
+            ---
+
+            ## If FIRST RUN:
+
+            1. Read CLAUDE.md, then inspect all changed files for violations
                (conventions, MUI v9 rules, TypeScript types, component rules, routing).
 
             2. Auto-fix what you can — run `npm run lint -- --fix`, fix remaining violations
@@ -45,10 +55,32 @@ jobs:
                If you made changes, commit them:
                  git add -A && git commit -m "fix(review): address automated review findings" && git push origin HEAD
 
-            3. Post a review report as a PR comment:
+            3. Post a full review report:
                  gh pr comment ${{ github.event.pull_request.number }} --body "<report>"
                Include: summary, issues fixed automatically, observations for the developer,
                test coverage assessment, and a final verdict (READY FOR HUMAN REVIEW / CHANGES REQUIRED).
+
+            ---
+
+            ## If FOLLOW-UP RUN (review comment already exists):
+
+            1. Run quality gates only — do not re-review the full code:
+                 npm run lint -- --fix && npm run build && npm test -- --run --passWithNoTests
+
+            2. Post a short follow-up comment only:
+                 gh pr comment ${{ github.event.pull_request.number }} --body "<short comment>"
+
+               The short comment must follow this format:
+               ---
+               **✅ Follow-up check passed**
+
+               All quality gates clean after automated fixes:
+               - `npm run lint` — ✅
+               - `npm run build` — ✅
+               - `npm test` — ✅
+
+               No further issues found. See the review above for full details.
+               ---
 
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
