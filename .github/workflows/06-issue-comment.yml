@@ -1,0 +1,108 @@
+name: Issue Comment — Clarification & Resume
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  handle-issue-comment:
+    # Only on issue comments (not PRs), never on bot comments
+    if: |
+      github.event.issue.pull_request == null &&
+      github.event.comment.user.type != 'Bot'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--allowedTools Bash,Edit,Write,Read,Glob,Grep"
+          prompt: |
+            A comment was posted on issue #${{ github.event.issue.number }}.
+
+            Issue title: "${{ github.event.issue.title }}"
+            Comment by: ${{ github.event.comment.user.login }}
+            Comment: "${{ github.event.comment.body }}"
+
+            ---
+
+            ## Step 1 — Check comment history
+
+            Read all existing comments on the issue:
+              gh issue view ${{ github.event.issue.number }} --comments
+
+            Determine: was the most recent bot comment (author: claude) a clarification
+            question asking for more information before implementation could begin?
+
+            ---
+
+            ## Step 2 — Classify and act
+
+            ### If the last bot comment WAS a clarification question:
+
+            This comment is the user's response. Assess whether it now provides enough
+            information to proceed:
+
+            **If still not enough info** — ask one more focused follow-up question:
+              gh issue comment ${{ github.event.issue.number }} --body "Thanks — one more thing I need:\n\n<specific question>\n\nReply here and I'll get started."
+            Stop here.
+
+            **If now enough info** — run the full implementation workflow:
+
+            1. Update the issue body with the expanded story (preserve original at top):
+                 gh issue edit ${{ github.event.issue.number }} --body "..."
+
+            2. Configure git, create branch `feature/GH-${{ github.event.issue.number }}-<slug>`,
+               implement the feature following all CLAUDE.md conventions.
+               Use all context from the issue body AND the comment thread.
+               If any image URLs are present, download with curl into src/assets/ —
+               never reference remote URLs in code.
+
+            3. Write unit tests for every new or changed component.
+
+            4. Run quality gate:
+                 npm run lint -- --fix && npm run build && npm test -- --run --passWithNoTests
+
+            5. Update docs if warranted:
+               - Update README.md if a new route, page, or user-facing feature was added
+               - Update CLAUDE.md if a new pattern or convention was discovered
+
+            6. Commit and raise PR targeting `develop`:
+                 gh pr create --title "[GH-${{ github.event.issue.number }}] ${{ github.event.issue.title }}" \
+                   --body "## Summary
+            <what was added and why>
+
+            ## UI Changes
+            <description of visual changes>
+
+            ## Test Plan
+            - [ ] <test item>
+
+            Closes #${{ github.event.issue.number }}" \
+                   --base develop
+
+            ### If the last bot comment was NOT a clarification question:
+
+            This is a new comment on an issue that was already handled or is unrelated.
+            Post a brief acknowledgment only if the comment is directed at you.
+            Do not make any code changes.
+
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
