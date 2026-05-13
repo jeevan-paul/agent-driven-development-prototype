@@ -39,8 +39,17 @@ jobs:
             Complete these steps in order:
 
             1. Expand the issue into a full user story (description, Given/When/Then acceptance
-               criteria, edge cases, effort estimate S/M/L/XL) and update the issue body:
-                 gh issue edit ${{ github.event.issue.number }} --body "<expanded story>"
+               criteria, edge cases, effort estimate S/M/L/XL) and update the issue body.
+               The original description must be preserved at the top, followed by the expanded
+               story below a divider. Use this exact structure:
+
+                 gh issue edit ${{ github.event.issue.number }} --body "${{ github.event.issue.body }}
+
+               ---
+
+               ## Story Expansion
+
+               <expanded story here>"
 
             2. Configure git, create branch `feature/GH-${{ github.event.issue.number }}-<slug>`,
                and implement the feature — follow CLAUDE.md for all conventions.
