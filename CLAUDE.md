@@ -89,6 +89,19 @@ New features follow this pattern:
 
 ---
 
+## Assets
+
+When an image is referenced or attached (e.g. from a GitHub issue):
+- Never use the remote URL directly in code (no GitHub CDN links, no external image URLs)
+- Always download the image and save it to `src/assets/` using curl:
+  ```bash
+  curl -L "<url>" -o src/assets/<meaningful-name>.<ext>
+  ```
+- Name the file descriptively based on its purpose (e.g. `default-avatar.png`, `company-logo.svg`)
+- Import it in code as a local module: `import avatarImg from '../assets/default-avatar.png'`
+
+---
+
 ## Coding Conventions
 
 ### MUI v9 — Critical Rules
