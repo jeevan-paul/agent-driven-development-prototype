@@ -6,6 +6,7 @@ on:
 
 jobs:
   implement:
+    if: contains(vars.ALLOWED_ACTORS, github.actor)
     runs-on: ubuntu-latest
     permissions:
       contents: write

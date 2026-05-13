@@ -6,10 +6,11 @@ on:
 
 jobs:
   handle-issue-comment:
-    # Only on issue comments (not PRs), never on bot comments
+    # Only on issue comments (not PRs), from allowed actors, never bots
     if: |
       github.event.issue.pull_request == null &&
-      github.event.comment.user.type != 'Bot'
+      github.event.comment.user.type != 'Bot' &&
+      contains(vars.ALLOWED_ACTORS, github.event.comment.user.login)
     runs-on: ubuntu-latest
     permissions:
       contents: write
