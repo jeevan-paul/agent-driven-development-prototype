@@ -80,9 +80,23 @@ jobs:
             4. Run quality gate:
                  npm run lint -- --fix && npm run build && npm test -- --run --passWithNoTests
 
-            5. Commit and raise PR targeting `develop`:
+            5. Update docs if warranted:
+               - Update README.md if a new route, page, or user-facing feature was added
+               - Update CLAUDE.md if a new pattern or convention was discovered
+
+            6. Commit and raise PR targeting `develop`:
                  gh pr create --title "[GH-${{ github.event.issue.number }}] ${{ github.event.issue.title }}" \
-                   --body "..." --base develop
+                   --body "## Summary
+            <what was added and why>
+
+            ## UI Changes
+            <description of visual changes>
+
+            ## Test Plan
+            - [ ] <test item>
+
+            Closes #${{ github.event.issue.number }}" \
+                   --base develop
 
             ### If the last bot comment was NOT a clarification question:
 

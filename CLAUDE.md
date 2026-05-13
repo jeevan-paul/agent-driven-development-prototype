@@ -2,7 +2,7 @@
 
 ## What This Is
 
-This repository is a **proof of concept for Agent Driven Development (ADD)**. You are a developer agent. Your job is to receive a story, understand the design, implement the feature, verify quality, and raise a pull request — exactly as a human developer would.
+This repository is a **proof of concept for Agent Driven Development (ADD)**. You are a developer agent. Your job is to receive a story from a GitHub issue, implement the feature, verify quality, and raise a pull request — exactly as a human developer would.
 
 The application is **PeopleDesk**, a fictional Employee Self-Service Portal. It is the subject of development, not the product being showcased. The showcase is the workflow you follow.
 
@@ -17,40 +17,44 @@ Regardless of role, when given a task:
 3. Produce clean, production-quality output consistent with the existing codebase
 4. Verify your own work before raising or approving a PR
 
-> **Role context is defined per skill.** Each skill file declares the role the agent plays when that skill is invoked (e.g. developer, tech lead). CLAUDE.md is role-neutral.
-
 ---
 
 ## Workflow — Follow This Order Every Time
 
-When assigned a story, execute these steps in sequence:
+When assigned a story via GitHub issue, execute these steps in sequence:
 
 ```
-1. /fetch-story     → Read the story from Notion via MCP
-2.  ↳ Notion update → Move story status from "To Do" to "In Progress"
-3. /fetch-design    → Pull the design spec from Figma via MCP
-4. /frontend        → Implement the feature
-5. /unit-test       → Write unit tests for new/changed components
-6. /lint            → Run ESLint and fix all violations
-7. /quality-gate    → Run full build + lint + tests, confirm all pass
-8. /raise-pr        → Commit, push, and open a GitHub pull request
-9.  ↳ Notion update → Move story status from "In Progress" to "Ready for Review"
+1. Assess          → Does the issue have enough info? If not, ask — don't guess.
+2. Expand story    → Update issue body with full user story (preserve original at top)
+3. Implement       → Create feature branch, write the feature
+4. Unit tests      → Write tests for every new/changed component
+5. Quality gate    → npm run lint -- --fix && npm run build && npm test -- --run
+6. Raise PR        → Commit, push, open PR targeting develop
+7. Self-update     → Update README.md and/or CLAUDE.md if needed (see below)
 ```
 
 Do not proceed to the next step if the current step has unresolved errors.
 
-### Notion Status Updates
+---
 
-These two status transitions are mandatory — not optional:
+## Self-Learning — Updating README and CLAUDE.md
 
-| Trigger | From | To |
-|---|---|---|
-| At the start of `/frontend` — Step 0a, before any code is written | `To Do` | `In Progress` |
-| Immediately after the PR is successfully raised | `In Progress` | `Ready for Review` |
+After every implementation, before committing:
 
-Use the Notion MCP to update the story's status property. The Notion Page ID will be available from the `/fetch-story` step.
+### Update README.md if:
+- A new route or page was added (document it in the Project Structure section)
+- A new user-facing feature exists that someone reading the README should know about
+- Setup steps have changed
 
-`/fetch-story` is read-only — it never changes the story status.
+Do not update README for internal refactors, test-only changes, or bug fixes with no visible behaviour change.
+
+### Update CLAUDE.md if:
+- A new coding pattern was used that differs from or extends what's documented
+- A new MUI component was used with non-obvious conventions
+- An edge case was encountered that future agents should know to handle
+- A convention was found to be wrong or incomplete — correct it
+
+When updating CLAUDE.md, add to the relevant section. Do not duplicate existing rules. If a rule needs correcting, edit it in place rather than adding a conflicting one.
 
 ---
 
@@ -65,6 +69,7 @@ Use the Notion MCP to update the story's status property. The Notion Page ID wil
 | Styling | Tailwind CSS | 4 |
 | State Management | Jotai | 2 |
 | Routing | React Router | 7 |
+| Testing | Vitest + React Testing Library | — |
 
 ---
 
@@ -78,6 +83,7 @@ src/
     common/           # Reusable UI primitives (StatCard, PageHeader, etc.)
   pages/              # One file per route (DashboardPage, ProfilePage, etc.)
   routes/             # AppRouter.tsx — route definitions and protected routes
+  assets/             # Static assets (images downloaded from issues go here)
   theme/              # theme.ts — MUI theme, brand tokens
 ```
 
@@ -86,6 +92,7 @@ New features follow this pattern:
 - Reusable component → `src/components/common/ComponentName.tsx`
 - New state → `src/atoms/featureAtom.ts`
 - New nav item → add to `navItems` array in `src/components/layout/Sidebar.tsx`
+- New page title → add to `pageTitles` map in `AppLayout.tsx`
 
 ---
 
@@ -145,36 +152,31 @@ Blue (interactive):   #085ED7
 
 ### Branch Naming
 ```
-feature/<story-id>-<short-description>
-e.g. feature/PD-12-leave-request-form
+feature/GH-<issue-number>-<short-description>
+e.g. feature/GH-12-leave-request-form
 ```
 
 ### Commit Message Format
 ```
 feat(scope): short description
-
-- Bullet point of key change
-- Another key change
-
-Story: <Notion story title or ID>
 ```
 
 ### PR Title Format
 ```
-[PD-XX] Short description of the feature
+[GH-XX] Short description of the feature
 ```
 
 ### PR Body Must Include
 - Summary (what was added and why)
-- Screenshots or description of UI changes
+- Description of UI changes
 - Test plan (what was tested)
-- Link to the Notion story
+- Link to the GitHub issue (`Closes #XX`)
 
 ---
 
 ## Quality Standards
 
-Before `/raise-pr`, all of the following must pass:
+Before raising a PR, all of the following must pass:
 
 - `npm run build` — zero TypeScript errors, zero build errors
 - `npm run lint` — zero ESLint violations
