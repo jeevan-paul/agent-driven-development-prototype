@@ -6,6 +6,7 @@ import Header from './Header';
 const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/profile': 'My Profile',
+  '/build': 'Propose a Change',
 };
 
 export default function AppLayout() {

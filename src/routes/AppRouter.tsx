@@ -4,6 +4,7 @@ import { isAuthenticatedAtom } from '../atoms/authAtom';
 import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
 import ProfilePage from '../pages/ProfilePage';
+import BuildPage from '../pages/BuildPage';
 import AppLayout from '../components/layout/AppLayout';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -25,6 +26,7 @@ export default function AppRouter() {
         >
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/build" element={<BuildPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
