@@ -75,8 +75,16 @@ jobs:
 
             ## Step 3 — Implement
 
-            Configure git, create branch `feature/GH-${{ github.event.issue.number }}-<slug>`,
-            and implement the feature — follow CLAUDE.md for all conventions.
+            Configure git then pull the latest develop so the feature branch starts from
+            the current state of the codebase:
+              git config user.name "github-actions[bot]"
+              git config user.email "github-actions[bot]@users.noreply.github.com"
+              git fetch origin develop
+              git checkout develop
+              git pull origin develop
+              git checkout -b feature/GH-${{ github.event.issue.number }}-<slug>
+
+            Implement the feature — follow CLAUDE.md for all conventions.
             If the issue body contains image URLs, download each with curl into src/assets/
             with a meaningful filename and import locally — never use remote URLs in code.
 

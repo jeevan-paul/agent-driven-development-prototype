@@ -7,7 +7,6 @@ on:
 
 jobs:
   review:
-    if: contains(vars.ALLOWED_ACTORS, github.actor)
     runs-on: ubuntu-latest
     permissions:
       contents: write
