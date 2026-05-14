@@ -139,8 +139,11 @@ export default function Sidebar() {
                 <Typography variant="body2" sx={{ color: '#fff', fontWeight: 500, lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {user.name}
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)' }}>
+                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {user.department}
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.35)', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {user.id}
                 </Typography>
               </Box>
             )}
