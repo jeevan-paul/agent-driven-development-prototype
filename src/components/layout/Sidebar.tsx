@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
-import BuildOutlinedIcon from '@mui/icons-material/BuildOutlined';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { sidebarOpenAtom } from '../../atoms/uiAtom';
@@ -26,7 +25,6 @@ const SIDEBAR_COLLAPSED = 64;
 const navItems = [
   { label: 'Dashboard', icon: <DashboardOutlinedIcon />, path: '/dashboard' },
   { label: 'My Profile', icon: <PersonOutlinedIcon />, path: '/profile' },
-  { label: 'Propose a Change', icon: <BuildOutlinedIcon />, path: '/build' },
 ];
 
 export default function Sidebar() {
