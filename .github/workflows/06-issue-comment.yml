@@ -6,8 +6,9 @@ on:
 
 jobs:
   handle-issue-comment:
-    # Only on issue comments (not PRs), from allowed actors, never bots
+    # Only when @claude is mentioned in an issue comment, from allowed actors, never bots
     if: |
+      contains(github.event.comment.body, '@claude') &&
       github.event.issue.pull_request == null &&
       github.event.comment.user.type != 'Bot' &&
       contains(vars.ALLOWED_ACTORS, github.event.comment.user.login)
@@ -36,11 +37,12 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: "--allowedTools Bash,Edit,Write,Read,Glob,Grep"
           prompt: |
-            A comment was posted on issue #${{ github.event.issue.number }}.
+            You were mentioned in a comment on issue #${{ github.event.issue.number }}.
 
             Issue title: "${{ github.event.issue.title }}"
             Comment by: ${{ github.event.comment.user.login }}
             Comment: "${{ github.event.comment.body }}"
+            (Ignore the @claude mention — treat the rest of the comment as the instruction.)
 
             ---
 

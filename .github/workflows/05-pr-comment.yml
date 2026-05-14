@@ -8,8 +8,9 @@ on:
 
 jobs:
   handle-comment:
-    # Only run on PR comments from allowed actors, never bots
+    # Only run when @claude is mentioned in a PR comment, from allowed actors, never bots
     if: |
+      contains(github.event.comment.body, '@claude') &&
       github.event.comment.user.type != 'Bot' &&
       contains(vars.ALLOWED_ACTORS, github.event.comment.user.login) &&
       (
@@ -55,10 +56,11 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: "--allowedTools Bash,Edit,Write,Read,Glob,Grep"
           prompt: |
-            A comment was posted on PR #${{ steps.pr.outputs.number }}.
+            You were mentioned in a PR comment on PR #${{ steps.pr.outputs.number }}.
 
             Comment by: ${{ github.event.comment.user.login }}
             Comment: "${{ github.event.comment.body }}"
+            (Ignore the @claude mention — treat the rest of the comment as the instruction.)
 
             ---
 
