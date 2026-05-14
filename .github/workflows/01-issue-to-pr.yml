@@ -6,6 +6,7 @@ on:
 
 jobs:
   implement:
+    if: contains(vars.ALLOWED_ACTORS, github.actor)
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -108,8 +109,10 @@ jobs:
 
             ## Step 7 — Raise PR
 
-            Commit all changes (including any doc updates) and open a PR targeting `develop`:
-              gh pr create --title "[GH-${{ github.event.issue.number }}] ${{ github.event.issue.title }}" \
+            Commit all changes (including any doc updates) and open a PR targeting `develop`.
+            Fetch the updated issue title first and use it for the PR title:
+              UPDATED_TITLE=$(gh issue view ${{ github.event.issue.number }} --json title -q '.title')
+              gh pr create --title "[GH-${{ github.event.issue.number }}] $UPDATED_TITLE" \
                 --body "## Summary
             <what was added and why>
 

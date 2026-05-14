@@ -6,7 +6,7 @@ on:
 
 jobs:
   merge:
-    if: github.event.review.state == 'approved'
+    if: github.event.review.state == 'approved' && contains(vars.ALLOWED_ACTORS, github.actor)
     runs-on: ubuntu-latest
     permissions:
       contents: write
