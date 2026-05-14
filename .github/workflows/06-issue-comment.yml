@@ -67,8 +67,11 @@ jobs:
 
             **If now enough info** — run the full implementation workflow:
 
-            1. Update the issue body with the expanded story (preserve original at top):
-                 gh issue edit ${{ github.event.issue.number }} --body "..."
+            1. Derive a concise, specific title from the full context (original issue + comment thread),
+               max 8 words, title case. Then update both title and body:
+                 gh issue edit ${{ github.event.issue.number }} \
+                   --title "<improved title>" \
+                   --body "<original description>\n\n---\n\n## Story Expansion\n\n<expanded story>"
 
             2. Configure git, create branch `feature/GH-${{ github.event.issue.number }}-<slug>`,
                implement the feature following all CLAUDE.md conventions.

@@ -57,8 +57,13 @@ jobs:
 
             ## Step 2 — Expand the story
 
-            Update the issue body, preserving the original description at the top:
-              gh issue edit ${{ github.event.issue.number }} --body "${{ github.event.issue.body }}
+            Based on the issue content, derive a concise, specific title (max 8 words, title case,
+            describes the feature clearly — e.g. "Add Leave Request Form with Balance Widget").
+
+            Update both the title and body in one command:
+              gh issue edit ${{ github.event.issue.number }} \
+                --title "<improved title>" \
+                --body "${{ github.event.issue.body }}
 
             ---
 
