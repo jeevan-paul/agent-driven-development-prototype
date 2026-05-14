@@ -1,0 +1,138 @@
+name: Comment Handler
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  handle-comment:
+    # Only fires when @claude is explicitly mentioned, by allowed actors, never bots
+    if: |
+      contains(github.event.comment.body, '@claude') &&
+      github.event.comment.user.type != 'Bot' &&
+      contains(vars.ALLOWED_ACTORS, github.event.comment.user.login)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Resolve context (PR vs issue)
+        id: ctx
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request_review_comment" ]; then
+            echo "type=pr" >> $GITHUB_OUTPUT
+            echo "number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+            echo "head_ref=${{ github.event.pull_request.head.ref }}" >> $GITHUB_OUTPUT
+          elif [ -n "${{ github.event.issue.pull_request.url }}" ]; then
+            echo "type=pr" >> $GITHUB_OUTPUT
+            echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+            HEAD_REF=$(gh pr view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json headRefName -q '.headRefName')
+            echo "head_ref=$HEAD_REF" >> $GITHUB_OUTPUT
+          else
+            echo "type=issue" >> $GITHUB_OUTPUT
+            echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+            echo "head_ref=" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+          ref: ${{ steps.ctx.outputs.head_ref || github.event.repository.default_branch }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--allowedTools Bash,Edit,Write,Read,Glob,Grep"
+          allowed_bots: "*"
+          prompt: |
+            You were mentioned via @claude.
+
+            Context type: ${{ steps.ctx.outputs.type }} (pr or issue)
+            Number: #${{ steps.ctx.outputs.number }}
+            Comment by: ${{ github.event.comment.user.login }}
+            Comment: "${{ github.event.comment.body }}"
+            (Ignore the @claude mention — treat the rest as the instruction.)
+
+            ---
+
+            ## If context type is "pr":
+
+            ### Step 1 — Get PR context
+              gh pr view ${{ steps.ctx.outputs.number }} --repo ${{ github.repository }} --comments
+            Check if the last bot comment (author: claude) was a clarification question.
+            Check existing branch work: git log --oneline -10 && git diff HEAD~1 --stat
+
+            ### Step 2 — Classify the comment
+            - **A — CHANGE REQUEST**: clearly asks for a code change
+            - **B — CLARIFICATION RESPONSE**: answers a previous bot question
+            - **C — NEEDS MORE INFO**: too vague to implement safely
+            - **D — NOT ACTIONABLE**: discussion, praise, no implied change
+
+            ### Step 3 — Act
+            **If A or B:**
+            - Read CLAUDE.md, build on existing branch work (never restart from scratch)
+            - Implement the change, run quality gate:
+                npm run lint -- --fix && npm run build && npm test -- --run --passWithNoTests
+            - Commit and push:
+                git config user.name "github-actions[bot]"
+                git config user.email "github-actions[bot]@users.noreply.github.com"
+                git add -A && git commit -m "fix: <description>" && git push origin HEAD
+            - Reply: gh pr comment ${{ steps.ctx.outputs.number }} --repo ${{ github.repository }} --body "✅ Done — <one sentence>"
+
+            **If C:**
+            - Post: gh pr comment ${{ steps.ctx.outputs.number }} --repo ${{ github.repository }} --body "Need a bit more detail:\n\n<specific question(s)>\n\nReply here and I'll pick it up."
+
+            **If D:** Post a one-line reply only if a direct response is warranted, otherwise do nothing.
+
+            ---
+
+            ## If context type is "issue":
+
+            ### Step 1 — Get issue context
+              gh issue view ${{ steps.ctx.outputs.number }} --repo ${{ github.repository }} --comments
+            Determine if the last bot comment was a clarification question.
+
+            ### Step 2 — Classify and act
+
+            **If last bot comment WAS a clarification question:**
+
+            Still not enough info → ask one more focused follow-up:
+              gh issue comment ${{ steps.ctx.outputs.number }} --repo ${{ github.repository }} --body "Thanks — one more thing:\n\n<question>\n\nReply here and I'll get started."
+
+            Now enough info → run full implementation:
+            1. Update issue title and body:
+                 gh issue edit ${{ steps.ctx.outputs.number }} --repo ${{ github.repository }} \
+                   --title "<concise title, max 8 words, title case>" \
+                   --body "<original description>\n\n---\n\n## Story Expansion\n\n<expanded story>"
+            2. Pull latest develop, create branch feature/GH-${{ steps.ctx.outputs.number }}-<slug>
+            3. Implement following CLAUDE.md. Use all context from issue body + comment thread.
+               Download any image URLs with curl into src/assets/ — never use remote URLs.
+            4. Write unit tests for every new or changed component.
+            5. Quality gate: npm run lint -- --fix && npm run build && npm test -- --run --passWithNoTests
+            6. Update README.md / CLAUDE.md if warranted.
+            7. Commit and raise PR:
+                 UPDATED_TITLE=$(gh issue view ${{ steps.ctx.outputs.number }} --repo ${{ github.repository }} --json title -q '.title')
+                 gh pr create --title "[GH-${{ steps.ctx.outputs.number }}] $UPDATED_TITLE" \
+                   --body "## Summary\n<summary>\n\n## UI Changes\n<ui changes>\n\n## Test Plan\n- [ ] <item>\n\nCloses #${{ steps.ctx.outputs.number }}" \
+                   --base develop
+
+            **If last bot comment was NOT a clarification question:**
+            Post a brief acknowledgment only if the comment is directed at you. No code changes.
+
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
