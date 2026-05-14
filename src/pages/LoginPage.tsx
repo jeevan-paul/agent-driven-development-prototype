@@ -31,6 +31,12 @@ export default function LoginPage() {
   const setUser = useSetAtom(authUserAtom);
   const navigate = useNavigate();
 
+  const handleFillDemoCredentials = () => {
+    setEmail(DEMO_EMAIL);
+    setPassword(DEMO_PASSWORD);
+    setError('');
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -185,9 +191,29 @@ export default function LoginPage() {
 
             {/* Demo hint */}
             <Box sx={{ mt: 3, p: 1.5, background: '#f0f7ff', borderRadius: 2, border: '1px solid #bfdbfe' }}>
-              <Typography variant="caption" sx={{ color: '#1e40af', display: 'block', fontWeight: 500, mb: 0.5 }}>
-                Demo credentials
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                <Typography variant="caption" sx={{ color: '#1e40af', fontWeight: 500 }}>
+                  Demo credentials
+                </Typography>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={handleFillDemoCredentials}
+                  sx={{
+                    fontSize: '0.7rem',
+                    py: 0.25,
+                    px: 1,
+                    minWidth: 0,
+                    borderColor: '#bfdbfe',
+                    color: '#1e40af',
+                    '&:hover': { borderColor: '#085ED7', background: '#dbeafe' },
+                    borderRadius: 1.5,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  Use demo credentials
+                </Button>
+              </Box>
               <Typography variant="caption" sx={{ color: '#374151', display: 'block' }}>
                 Email: <strong>{DEMO_EMAIL}</strong>
               </Typography>
