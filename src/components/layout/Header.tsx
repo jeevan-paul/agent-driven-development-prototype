@@ -13,6 +13,7 @@ import {
   IconButton,
 } from '@mui/material';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import BuildOutlinedIcon from '@mui/icons-material/BuildOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useState } from 'react';
 import { authUserAtom, isAuthenticatedAtom } from '../../atoms/authAtom';
@@ -80,6 +81,10 @@ export default function Header({ title }: HeaderProps) {
           <MenuItem onClick={() => { navigate('/profile'); setAnchorEl(null); }} sx={{ gap: 1.5, py: 1 }}>
             <ListItemIcon><PersonOutlinedIcon fontSize="small" /></ListItemIcon>
             <Typography variant="body2">My Profile</Typography>
+          </MenuItem>
+          <MenuItem onClick={() => { navigate('/build'); setAnchorEl(null); }} sx={{ gap: 1.5, py: 1 }}>
+            <ListItemIcon><BuildOutlinedIcon fontSize="small" /></ListItemIcon>
+            <Typography variant="body2">Propose a Change</Typography>
           </MenuItem>
           <Divider />
           <MenuItem onClick={handleLogout} sx={{ gap: 1.5, py: 1, color: '#ef4444' }}>
