@@ -15,6 +15,10 @@ import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import FmdGoodOutlinedIcon from '@mui/icons-material/FmdGoodOutlined';
+import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
+import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined';
 import { authUserAtom } from '../atoms/authAtom';
 
 const profileDetails = {
@@ -25,6 +29,15 @@ const profileDetails = {
   employeeId: 'EMP-2021-001',
   manager: 'Sarah Chen',
   managerInitials: 'SC',
+};
+
+const homeAddress = {
+  line1: '742 Evergreen Terrace',
+  line2: 'Apt 4B',
+  city: 'San Francisco',
+  state: 'CA',
+  postalCode: '94107',
+  country: 'United States',
 };
 
 const InfoRow = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) => (
@@ -129,6 +142,32 @@ export default function ProfilePage() {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Home Address */}
+      <Card sx={{ borderRadius: 2.5 }} data-testid="home-address-section">
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.72rem' }}>
+            Home Address
+          </Typography>
+          <Divider sx={{ mb: 1 }} />
+          <Grid container spacing={0}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <InfoRow icon={<HomeOutlinedIcon fontSize="small" />} label="Street Address" value={homeAddress.line2 ? `${homeAddress.line1}, ${homeAddress.line2}` : homeAddress.line1} />
+              <Divider />
+              <InfoRow icon={<FmdGoodOutlinedIcon fontSize="small" />} label="City" value={homeAddress.city} />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <InfoRow icon={<LocationOnOutlinedIcon fontSize="small" />} label="State / Province" value={homeAddress.state} />
+              <Divider />
+              <InfoRow icon={<MarkunreadMailboxOutlinedIcon fontSize="small" />} label="Postal / ZIP Code" value={homeAddress.postalCode} />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <Divider />
+              <InfoRow icon={<PublicOutlinedIcon fontSize="small" />} label="Country" value={homeAddress.country} />
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
     </Box>
   );
 }
