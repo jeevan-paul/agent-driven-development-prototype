@@ -23,7 +23,9 @@ interface HeaderProps {
 }
 
 function formatStartDate(iso: string): string {
-  const d = new Date(iso);
+  // Append T00:00:00 (no timezone) so the date is parsed as local midnight,
+  // not UTC midnight — avoids showing the previous day in UTC-offset timezones.
+  const d = new Date(`${iso}T00:00:00`);
   return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
