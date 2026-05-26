@@ -52,6 +52,7 @@ export default function LoginPage() {
         role: 'Senior Software Engineer',
         department: 'Engineering',
         avatarInitials: 'AM',
+        startDate: '2020-03-15',
       });
       setAuth(true);
       navigate('/dashboard');
