@@ -28,38 +28,23 @@ describe('BuildPage', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the page heading and form fields', () => {
+  it('renders the page heading and description field', () => {
     renderBuildPage();
     expect(screen.getByText('Propose a Change')).toBeInTheDocument();
-    expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/title/i)).not.toBeInTheDocument();
     expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /submit request/i })).toBeInTheDocument();
   });
 
-  it('submit button is disabled when fields are empty', () => {
+  it('submit button is disabled when description is empty', () => {
     renderBuildPage();
     const button = screen.getByRole('button', { name: /submit request/i });
     expect(button).toBeDisabled();
   });
 
-  it('submit button is disabled when only title is filled', async () => {
+  it('submit button is enabled when description is filled', async () => {
     const user = userEvent.setup();
     renderBuildPage();
-    await user.type(screen.getByLabelText(/title/i), 'My title');
-    expect(screen.getByRole('button', { name: /submit request/i })).toBeDisabled();
-  });
-
-  it('submit button is disabled when only description is filled', async () => {
-    const user = userEvent.setup();
-    renderBuildPage();
-    await user.type(screen.getByLabelText(/description/i), 'Some description');
-    expect(screen.getByRole('button', { name: /submit request/i })).toBeDisabled();
-  });
-
-  it('submit button is enabled when both fields are filled', async () => {
-    const user = userEvent.setup();
-    renderBuildPage();
-    await user.type(screen.getByLabelText(/title/i), 'My title');
     await user.type(screen.getByLabelText(/description/i), 'Some description');
     expect(screen.getByRole('button', { name: /submit request/i })).toBeEnabled();
   });
@@ -73,7 +58,6 @@ describe('BuildPage', () => {
     const user = userEvent.setup();
     renderBuildPage();
 
-    await user.type(screen.getByLabelText(/title/i), 'Add dark mode');
     await user.type(screen.getByLabelText(/description/i), 'We need dark mode for better UX.');
     await user.click(screen.getByRole('button', { name: /submit request/i }));
 
@@ -87,7 +71,7 @@ describe('BuildPage', () => {
     );
   });
 
-  it('calls GitHub API with the correct payload', async () => {
+  it('calls GitHub API with constant title and user description', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ html_url: 'https://github.com/test-owner/test-repo/issues/1', number: 1 }),
@@ -96,7 +80,6 @@ describe('BuildPage', () => {
     const user = userEvent.setup();
     renderBuildPage();
 
-    await user.type(screen.getByLabelText(/title/i), 'Fix typo');
     await user.type(screen.getByLabelText(/description/i), 'Typo on homepage.');
     await user.click(screen.getByRole('button', { name: /submit request/i }));
 
@@ -105,7 +88,7 @@ describe('BuildPage', () => {
     const [url, options] = mockFetch.mock.calls[0] as [string, RequestInit];
     expect(url).toBe('https://api.github.com/repos/test-owner/test-repo/issues');
     const body = JSON.parse(options.body as string);
-    expect(body.title).toBe('Fix typo');
+    expect(body.title).toBe('Proposing a new change');
     expect(body.body).toBe('Typo on homepage.');
   });
 
@@ -120,7 +103,6 @@ describe('BuildPage', () => {
     const user = userEvent.setup();
     renderBuildPage();
 
-    await user.type(screen.getByLabelText(/title/i), 'Fix typo');
     await user.type(screen.getByLabelText(/description/i), 'Typo on homepage.');
     await user.click(screen.getByRole('button', { name: /submit request/i }));
 
@@ -139,7 +121,6 @@ describe('BuildPage', () => {
     const user = userEvent.setup();
     renderBuildPage();
 
-    await user.type(screen.getByLabelText(/title/i), 'Idea');
     await user.type(screen.getByLabelText(/description/i), 'Great idea here.');
     await user.click(screen.getByRole('button', { name: /submit request/i }));
 
@@ -158,7 +139,6 @@ describe('BuildPage', () => {
     const user = userEvent.setup();
     renderBuildPage();
 
-    await user.type(screen.getByLabelText(/title/i), 'My title');
     await user.type(screen.getByLabelText(/description/i), 'My description');
     await user.click(screen.getByRole('button', { name: /submit request/i }));
 
