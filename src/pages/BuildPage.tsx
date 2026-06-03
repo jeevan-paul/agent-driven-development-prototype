@@ -16,7 +16,7 @@ import BuildOutlinedIcon from '@mui/icons-material/BuildOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import { buildFormAtom, buildSubmitStatusAtom } from '../atoms/buildAtom';
 
-const TITLE_MAX = 256;
+const CONSTANT_TITLE = 'Proposing a new change';
 
 async function createGitHubIssue(
   title: string,
@@ -54,16 +54,10 @@ export default function BuildPage() {
   const [form, setForm] = useAtom(buildFormAtom);
   const [status, setStatus] = useAtom(buildSubmitStatusAtom);
 
-  const titleError = form.title.trim().length === 0 ? 'Title is required' : form.title.length > TITLE_MAX ? `Title must be ${TITLE_MAX} characters or fewer` : '';
   const descriptionError = form.description.trim().length === 0 ? 'Description is required' : '';
 
   const isLoading = status.type === 'loading';
   const isSuccess = status.type === 'success';
-
-  function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm((prev) => ({ ...prev, title: e.target.value }));
-    if (status.type !== 'idle') setStatus({ type: 'idle' });
-  }
 
   function handleDescriptionChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setForm((prev) => ({ ...prev, description: e.target.value }));
@@ -72,20 +66,20 @@ export default function BuildPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (titleError || descriptionError) return;
+    if (descriptionError) return;
 
     setStatus({ type: 'loading' });
     try {
-      const issue = await createGitHubIssue(form.title.trim(), form.description.trim());
+      const issue = await createGitHubIssue(CONSTANT_TITLE, form.description.trim());
       setStatus({ type: 'success', issueUrl: issue.html_url, issueNumber: issue.number });
-      setForm({ title: '', description: '' });
+      setForm({ description: '' });
     } catch (err) {
       setStatus({ type: 'error', message: err instanceof Error ? err.message : 'An unexpected error occurred.' });
     }
   }
 
   function handleReset() {
-    setForm({ title: '', description: '' });
+    setForm({ description: '' });
     setStatus({ type: 'idle' });
   }
 
@@ -140,23 +134,6 @@ export default function BuildPage() {
           <CardContent sx={{ p: 3 }}>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               <TextField
-                label="Title"
-                placeholder="e.g. Add dark mode toggle to the dashboard"
-                value={form.title}
-                onChange={handleTitleChange}
-                error={status.type === 'error' && titleError !== ''}
-                helperText={
-                  form.title.length > 0
-                    ? `${form.title.length}/${TITLE_MAX} characters${titleError ? ` — ${titleError}` : ''}`
-                    : undefined
-                }
-                required
-                fullWidth
-                disabled={isLoading}
-                slotProps={{ input: { inputProps: { maxLength: TITLE_MAX + 10 } } }}
-              />
-
-              <TextField
                 label="Description"
                 placeholder="Describe the change in as much detail as you like — what's the problem, what would the ideal solution look like, and who would benefit?"
                 value={form.description}
@@ -173,7 +150,7 @@ export default function BuildPage() {
                   type="submit"
                   variant="contained"
                   size="large"
-                  disabled={isLoading || titleError !== '' || descriptionError !== ''}
+                  disabled={isLoading || descriptionError !== ''}
                   startIcon={isLoading ? <CircularProgress size={18} color="inherit" /> : undefined}
                   sx={{ minWidth: 160, background: '#085ED7', '&:hover': { background: '#064db5' } }}
                 >
