@@ -22,6 +22,13 @@ interface HeaderProps {
   title: string;
 }
 
+function formatStartDate(iso: string): string {
+  // Append T00:00:00 (no timezone) so the date is parsed as local midnight,
+  // not UTC midnight — avoids showing the previous day in UTC-offset timezones.
+  const d = new Date(`${iso}T00:00:00`);
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
 export default function Header({ title }: HeaderProps) {
   const user = useAtomValue(authUserAtom);
   const setAuth = useSetAtom(isAuthenticatedAtom);
@@ -50,7 +57,19 @@ export default function Header({ title }: HeaderProps) {
           {title}
         </Typography>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {user && (
+            <Box sx={{ display: { xs: 'none', sm: 'flex' }, flexDirection: 'column', alignItems: 'flex-end' }}>
+              <Typography variant="caption" sx={{ color: '#64748b', lineHeight: 1.3 }}>
+                {user.department}
+              </Typography>
+              {user.startDate && (
+                <Typography variant="caption" sx={{ color: '#94a3b8', lineHeight: 1.3 }}>
+                  Since {formatStartDate(user.startDate)}
+                </Typography>
+              )}
+            </Box>
+          )}
           <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small" sx={{ p: 0.5 }}>
             <Avatar
               sx={{

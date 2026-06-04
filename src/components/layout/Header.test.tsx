@@ -2,9 +2,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider, createStore } from 'jotai';
 import Header from './Header';
-import { authUserAtom } from '../../atoms/authAtom';
+import { authUserAtom, type AuthUser } from '../../atoms/authAtom';
 
-function renderHeader() {
+function renderHeader(overrides: Partial<AuthUser> = {}) {
   const store = createStore();
   store.set(authUserAtom, {
     id: '1',
@@ -13,6 +13,8 @@ function renderHeader() {
     role: 'Employee',
     department: 'Engineering',
     avatarInitials: 'AM',
+    startDate: '2020-03-15',
+    ...overrides,
   });
 
   return render(
@@ -47,5 +49,22 @@ describe('Header profile menu', () => {
 
     expect(proposeIdx).toBeGreaterThanOrEqual(0);
     expect(signOutIdx).toBeGreaterThan(proposeIdx);
+  });
+});
+
+describe('Header employee info', () => {
+  it('shows department in the header bar', () => {
+    renderHeader();
+    expect(screen.getByText('Engineering')).toBeInTheDocument();
+  });
+
+  it('shows formatted start date in the header bar', () => {
+    renderHeader();
+    expect(screen.getByText('Since 15 Mar 2020')).toBeInTheDocument();
+  });
+
+  it('does not render start date when startDate is not set', () => {
+    renderHeader({ startDate: undefined });
+    expect(screen.queryByText(/Since/)).not.toBeInTheDocument();
   });
 });

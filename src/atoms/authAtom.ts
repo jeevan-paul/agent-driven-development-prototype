@@ -7,6 +7,7 @@ export interface AuthUser {
   role: string;
   department: string;
   avatarInitials: string;
+  startDate?: string;
 }
 
 export const isAuthenticatedAtom = atom<boolean>(false);
