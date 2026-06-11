@@ -27,9 +27,10 @@ function renderSidebar(open = true) {
 }
 
 describe('Sidebar', () => {
-  it('renders Dashboard and My Profile nav items', () => {
+  it('renders Dashboard, My Leave, and My Profile nav items', () => {
     renderSidebar();
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('My Leave')).toBeInTheDocument();
     expect(screen.getByText('My Profile')).toBeInTheDocument();
   });
 

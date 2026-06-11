@@ -1,4 +1,5 @@
 import { useAtomValue } from 'jotai';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -14,14 +15,24 @@ import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import { authUserAtom } from '../atoms/authAtom';
 
-const quickLinks = [
+interface QuickLink {
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+  color: string;
+  bg: string;
+  tag?: string;
+  path?: string;
+}
+
+const quickLinks: QuickLink[] = [
   {
     label: 'Leave Request',
     description: 'Apply for leave or check balance',
     icon: <CalendarTodayOutlinedIcon />,
     color: '#085ED7',
     bg: '#eff6ff',
-    tag: 'Coming soon',
+    path: '/leave',
   },
   {
     label: 'Payslips',
@@ -85,6 +96,7 @@ const stats = [
 
 export default function DashboardPage() {
   const user = useAtomValue(authUserAtom);
+  const navigate = useNavigate();
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -156,19 +168,21 @@ export default function DashboardPage() {
               {quickLinks.map((link) => (
                 <Box
                   key={link.label}
+                  onClick={() => link.path && navigate(link.path)}
                   sx={{
                     p: 2,
                     borderRadius: 2,
                     background: link.bg,
-                    cursor: 'not-allowed',
-                    opacity: 0.85,
+                    cursor: link.path ? 'pointer' : 'not-allowed',
+                    opacity: link.path ? 1 : 0.85,
                     border: `1px solid ${link.color}18`,
                     transition: 'all 0.15s',
+                    ...(link.path && { '&:hover': { boxShadow: 3, transform: 'translateY(-2px)' } }),
                   }}
                 >
                   <Box sx={{ color: link.color, mb: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     {link.icon}
-                    <Chip label={link.tag} size="small" sx={{ fontSize: '0.65rem', height: 18, background: `${link.color}18`, color: link.color, fontWeight: 500 }} />
+                    {link.tag && <Chip label={link.tag} size="small" sx={{ fontSize: '0.65rem', height: 18, background: `${link.color}18`, color: link.color, fontWeight: 500 }} />}
                   </Box>
                   <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a', mb: 0.25 }}>
                     {link.label}

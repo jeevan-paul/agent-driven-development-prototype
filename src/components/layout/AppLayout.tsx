@@ -7,6 +7,7 @@ const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/profile': 'My Profile',
   '/build': 'Propose a Change',
+  '/leave': 'My Leave',
 };
 
 export default function AppLayout() {

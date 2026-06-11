@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
+import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { sidebarOpenAtom } from '../../atoms/uiAtom';
@@ -24,6 +25,7 @@ const SIDEBAR_COLLAPSED = 64;
 
 const navItems = [
   { label: 'Dashboard', icon: <DashboardOutlinedIcon />, path: '/dashboard' },
+  { label: 'My Leave', icon: <EventAvailableOutlinedIcon />, path: '/leave' },
   { label: 'My Profile', icon: <PersonOutlinedIcon />, path: '/profile' },
 ];
 

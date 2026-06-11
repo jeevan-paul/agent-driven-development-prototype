@@ -211,3 +211,12 @@ npm run lint     # ESLint check
 **Demo login:**
 - Email: `alex.morgan@company.com`
 - Password: `password`
+
+**Available pages:**
+
+| Route | Page | Description |
+|---|---|---|
+| `/dashboard` | Dashboard | Welcome banner, leave summary stats, quick-access links, announcements |
+| `/leave` | My Leave | Leave balance dashboard — per-type breakdown with progress indicators |
+| `/profile` | My Profile | Employee contact and employment details |
+| `/build` | Propose a Change | Submit a GitHub issue for a new feature request |

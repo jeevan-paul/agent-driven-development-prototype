@@ -191,11 +191,11 @@ If any check fails, fix it before proceeding. Do not raise a PR with known failu
 
 The following Quick Access cards on the Dashboard are intentionally placeholders — each is a story waiting to be developed:
 
-| Card | Story |
-|---|---|
-| Leave Request | Add leave request form + balance widget |
-| Payslips | Add payslip list with download |
-| Team Directory | Add searchable employee directory |
-| Documents | Add company document center |
+| Card | Story | Status |
+|---|---|---|
+| Leave Request | Leave balance dashboard | Done — `/leave` |
+| Payslips | Add payslip list with download | Placeholder |
+| Team Directory | Add searchable employee directory | Placeholder |
+| Documents | Add company document center | Placeholder |
 
-When implementing any of these, remove the `cursor: 'not-allowed'` and `"Coming soon"` chip from the corresponding card in `DashboardPage.tsx` and wire it to the new route.
+When wiring a Quick Access card to a new route, do NOT remove `cursor: 'not-allowed'` from the entire card block — that would break the remaining placeholders. Instead, add an optional `path?: string` field to the `QuickLink` interface defined in `DashboardPage.tsx`, set `path` on the newly wired card (and omit `tag`), then conditionally render `cursor`, `opacity`, hover styles, and the chip based on whether `path` is present. Use `onClick={() => link.path && navigate(link.path)}` for safe navigation.
