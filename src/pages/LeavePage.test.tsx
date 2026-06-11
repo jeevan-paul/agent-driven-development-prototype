@@ -33,7 +33,7 @@ describe('LeavePage', () => {
 
   it('renders summary stat labels', () => {
     renderLeavePage();
-    expect(screen.getByText('Available Balance')).toBeInTheDocument();
+    expect(screen.getByText('Total Balance Available')).toBeInTheDocument();
     expect(screen.getByText('Days Used')).toBeInTheDocument();
     expect(screen.getByText('Pending Approval')).toBeInTheDocument();
   });

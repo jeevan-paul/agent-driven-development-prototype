@@ -22,7 +22,7 @@ export default function LeavePage() {
   const totalPending = leaveTypes.reduce((sum, lt) => sum + lt.pendingDays, 0);
 
   const summaryStats = [
-    { label: 'Available Balance', value: totalAvailable, unit: 'days', icon: <EventAvailableOutlinedIcon />, color: '#085ED7', bg: '#eff6ff' },
+    { label: 'Total Balance Available', value: totalAvailable, unit: 'days', icon: <EventAvailableOutlinedIcon />, color: '#085ED7', bg: '#eff6ff' },
     { label: 'Days Used', value: totalUsed, unit: 'days', icon: <CheckCircleOutlinedIcon />, color: '#059669', bg: '#ecfdf5' },
     { label: 'Pending Approval', value: totalPending, unit: 'days', icon: <HourglassEmptyOutlinedIcon />, color: '#d97706', bg: '#fffbeb' },
   ];
