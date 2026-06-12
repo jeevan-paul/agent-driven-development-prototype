@@ -12,7 +12,7 @@ import {
   IconButton,
   Tooltip,
 } from '@mui/material';
-import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
+import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -23,7 +23,7 @@ const SIDEBAR_WIDTH = 240;
 const SIDEBAR_COLLAPSED = 64;
 
 const navItems = [
-  { label: 'Dashboard', icon: <DashboardOutlinedIcon />, path: '/dashboard' },
+  { label: 'Dashboard', icon: <FolderOutlinedIcon />, path: '/dashboard' },
   { label: 'My Profile', icon: <PersonOutlinedIcon />, path: '/profile' },
 ];
 

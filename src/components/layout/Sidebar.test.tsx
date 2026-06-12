@@ -38,6 +38,12 @@ describe('Sidebar', () => {
     expect(screen.queryByText('Propose a Change')).not.toBeInTheDocument();
   });
 
+  it('renders a folder icon for the Dashboard nav item', () => {
+    renderSidebar();
+    expect(screen.getByTestId('FolderOutlinedIcon')).toBeInTheDocument();
+    expect(screen.queryByTestId('DashboardOutlinedIcon')).not.toBeInTheDocument();
+  });
+
   it('displays employee name, department, and employee id when expanded', () => {
     renderSidebar(true);
     expect(screen.getByText('Alex Morgan')).toBeInTheDocument();
